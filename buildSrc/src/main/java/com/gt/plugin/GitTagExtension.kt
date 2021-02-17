@@ -9,4 +9,6 @@ package com.gt.plugin
 //作为拓展函数对象，不能是final
 open class GitTagExtension {
     var taskName= "taskName"
+    var tagName = "tagName"
+    var tagMsg = "-"
 }

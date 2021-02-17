@@ -3,9 +3,15 @@ plugins {
     id 'kotlin-android'
 }
 apply plugin:'auto-gittag'
-
+def getDate(){
+    def date = new Date()
+    def formattedDate = date.format('yyMMddHHmmss')
+    return formattedDate
+}
 grockName{
-    taskName "assembleDebug" //编译为setName("xx")
+    taskName "assembleDebug"
+    tagName "v1.0.1-"+getDate()
+    tagMsg "-"
 }
 android {
     compileSdkVersion 30
