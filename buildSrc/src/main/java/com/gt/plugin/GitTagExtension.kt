@@ -8,5 +8,5 @@ package com.gt.plugin
  */
 //作为拓展函数对象，不能是final
 open class GitTagExtension {
-    var name= "GitTagExtension original-name"
+    var taskName= "taskName"
 }

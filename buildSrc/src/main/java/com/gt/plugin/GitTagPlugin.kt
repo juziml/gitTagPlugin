@@ -8,14 +8,17 @@ class GitTagPlugin :Plugin<Project> {
         val extensionFun = project
             .extensions.create("grockName", GitTagExtension::class.java)
         project.afterEvaluate {
-            println("GitTagPlugin-kotlin afterEvaluate:${extensionFun.name}")
-        }
-        project.tasks.forEach {
-            val name = it.name
-            println("task name= $name")
-            it.doLast {
-                Runtime.getRuntime().exec("")
+            project.tasks.forEach {
+                val name = it.name
+                if(name == extensionFun.taskName){
+                    it.doLast {
+                        println("crate git tag")
+//                Runtime.getRuntime().exec("")
+                    }
+                }
             }
         }
+
+
     }
 }

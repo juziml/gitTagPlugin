@@ -5,7 +5,7 @@ plugins {
 apply plugin:'auto-gittag'
 
 grockName{
-    name "newName" //编译为setName("xx")
+    taskName "assembleDebug" //编译为setName("xx")
 }
 android {
     compileSdkVersion 30
@@ -26,6 +26,17 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    flavorDimensions "version"
+    productFlavors {
+        market {
+            dimension "version"
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
