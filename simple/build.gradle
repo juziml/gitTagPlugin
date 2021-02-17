@@ -8,7 +8,7 @@ def getDate(){
     def formattedDate = date.format('yyMMddHHmmss')
     return formattedDate
 }
-grockName{
+gitTagExtension{
     taskName "assembleDebug"
     tagName "v1.0.1-"+getDate()
     tagMsg "-"
