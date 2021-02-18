@@ -1,25 +1,29 @@
-apply plugin:'com.android.application'
-apply plugin:GitTagPlugin
+apply plugin: 'com.android.application'
+apply plugin: GitTagPlugin
 
-class GitTagExtension{
+class GitTagExtension {
     def targetTask = "taskName"
     def tagName = "tagName"
     def tagMsg = "-"
 }
-class GitTagPlugin implements Plugin<Project>{
+
+class GitTagPlugin implements Plugin<Project> {
+
     @Override
     void apply(Project project) {
-        def extension = project.extensions.create("autoPublishTag",GitTagExtension)
+        def extension = project.extensions.create("autoPublishTag", GitTagExtension)
         project.afterEvaluate {//放在插件加完后执行，避免扩展函数未创建完成就访问
             println " apply taskName=${extension.targetTask} tagName=${extension.tagName}"
-            project.tasks.each {task->
-                if(task.name == extension.targetTask){
+            project.tasks.each { task ->
+                if (task.name == extension.targetTask) {
                     task.doLast {
                         def createTag = "git tag ${extension.tagName} -m ${extension.tagMsg}"
-                        def pushTag = " git push origin --tag"
-//                        val pushTag = " git push origin ${extensionFun.tagName}"//推单个这里不管用，用全推就行
                         println("createTag:$createTag")
                         Runtime.getRuntime().exec(createTag)
+                    }
+                    //需要先后执行的命令，不能放在一个节点里，命令执行似乎是异步并发的
+                    task.doLast {
+                        def pushTag = "git push origin ${extension.tagName}"
                         println("pushTag:$pushTag")
                         Runtime.getRuntime().exec(pushTag)
                     }
@@ -28,3 +32,4 @@ class GitTagPlugin implements Plugin<Project>{
         }
     }
 }
+
