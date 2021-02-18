@@ -13,12 +13,13 @@ class GitTagPlugin : Plugin<Project> {
                 val name = it.name
                 if (name == extensionFun.targetTask) {
                     it.doLast {
-                        println("crate git tag name=${extensionFun.tagName} msg=${extensionFun.tagMsg}")
-                        val createTag = "git tag ${extensionFun.tagName} -m ${extensionFun.tagMsg}"
-                        val pushTag = " git push origin --tag"
-//                        val pushTag = " git push origin ${extensionFun.tagName}"//推单个不知道为什么这里不管用，用全推就行
+                        val  createTag = "git tag ${extensionFun.tagName} -m ${extensionFun.tagMsg}"
                         println("createTag:$createTag")
                         Runtime.getRuntime().exec(createTag)
+                    }
+                    //需要先后执行的命令，不能放在一个节点里，命令执行似乎是异步并发的
+                    it.doLast {
+                        val pushTag = "git push origin ${extensionFun.tagName}"
                         println("pushTag:$pushTag")
                         Runtime.getRuntime().exec(pushTag)
                     }
