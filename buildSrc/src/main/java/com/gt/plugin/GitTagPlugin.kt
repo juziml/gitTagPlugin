@@ -17,6 +17,11 @@ class GitTagPlugin : Plugin<Project> {
                         println("createTag:$createTag")
                         Runtime.getRuntime().exec(createTag)
                     }
+                    it.doLast {
+                        println("createTag:sleep"+System.currentTimeMillis())
+                        Thread.sleep(2000)
+                        println("createTag:sleep"+System.currentTimeMillis())
+                    }
                     //需要先后执行的命令，不能放在一个节点里，命令执行似乎是异步并发的
                     it.doLast {
                         val pushTag = "git push origin ${extensionFun.tagName}"
