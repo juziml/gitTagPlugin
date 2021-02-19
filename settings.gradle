@@ -1,2 +1,2 @@
 include ':simple'
-rootProject.name = "myPlugin"
+rootProject.name = "plugin-git-tag"
