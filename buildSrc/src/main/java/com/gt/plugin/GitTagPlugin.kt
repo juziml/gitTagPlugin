@@ -10,9 +10,9 @@ class GitTagPlugin : Plugin<Project> {
         project.afterEvaluate {
 
             println("extensionFun taskName = ${exFun.targetTask} ")
-            val tagHandler = TagHandler(exFun.tag!!)
-           val tagConfig =  tagHandler.call()
-            println("extensionFun taskName = ${tagConfig.mName} ")
+//            val tagHandler = TagHandler(exFun.tag!!)
+//           val tagConfig =  tagHandler.call()
+//            println("extensionFun taskName = ${tagConfig.name} ")
         }
     }
 }

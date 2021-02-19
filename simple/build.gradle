@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
 }
 apply plugin:'auto-gittag'
+
 def getDate(){
     def date = new Date()
     def formattedDate = date.format('yyMMddHHmmss')
@@ -10,18 +11,14 @@ def getDate(){
 }
 autoPublishTag{
     targetTask =  "assembleDebug"
-    cTest {
-        name "v.1.0.0"
-        msg "debug"
-    }
-    tag = {
-        name("v.1.0.0")
-        msg "debug"
+    tag {
+        name = "v.1.0.0"
+        msg = "debug"
     }
 }
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.0"
+    compileSdkVersion =  30
+    buildToolsVersion  = "30.0.0"
 
     defaultConfig {
         applicationId "com.grock.myplugin"
@@ -51,8 +48,8 @@ android {
 
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'

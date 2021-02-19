@@ -10,10 +10,10 @@ repositories {
 }
 dependencies {
     // 仅在编译时使用 Grdale-API 依赖
-//    compileOnly gradleApi() //目前暂时不知道gradleApi的作用 所以保持注释
+//    compileOnly gradleApi() //引入基础的gradleApi，不包含android 某些编译部分api
     // 在插件源码中添加 kotlin 标准库依赖
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-    //添加android的 编译任务依赖包，比如transform
+//    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    //添加android的 编译任务依赖包，比如com.android.build.api.xx.transform
     implementation "com.android.tools.build:gradle:4.1.0"
 }
 java {
