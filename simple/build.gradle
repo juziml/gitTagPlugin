@@ -2,19 +2,22 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
 }
-apply plugin:'auto-gittag'
+apply plugin:'zm-tools'
 
 def getDate(){
     def date = new Date()
     def formattedDate = date.format('yyMMddHHmmss')
     return formattedDate
 }
-autoPublishTag{
-    targetTask =  "assembleDebug"
+zmToolsEx{
+
     tag {
-        name = "v.1.0.0"
-        msg = "debug"
+        def tasks = ['assembleDebug','assemble']
+        targetTaskName tasks //必须传对象，不可以直接在此处再创建数组
+        tagName "v.1.0.0"
+        tagMsg "debug"
     }
+
 }
 android {
     compileSdkVersion =  30
