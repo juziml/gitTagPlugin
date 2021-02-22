@@ -1,33 +1,66 @@
 package com.gt.plugin
+
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import java.lang.IllegalArgumentException
 
 class ToolsPlugin : Plugin<Project> {
+
     override fun apply(project: Project) {
-
-        val exFun = project
+        "project.name ${project.name}\"".println()
+        val toolsExFun = project
             .extensions.create("zmToolsEx", ToolsExtension::class.java)
-        println( "befor :task szie=${project.tasks.size}")
+//       val libExFun =  project.extensions.findByType(LibraryExtension::class.java) //lib 编译拓展函数，暂时用不到
+        val appPlugin: AppPlugin? = project.plugins.findPlugin(AppPlugin::class.java)
+        if (null == appPlugin) {
+            throw IllegalStateException("can not found 'android' plugin,only support on 'android' building")
+        }
         project.afterEvaluate {
-            val gitTagConfig = ToolsClosureHandler.build(exFun.tag,GitTagConfig::class.java)
-            println( "tagConfig name = ${gitTagConfig.tagName} size=${gitTagConfig.targetTaskName.size}" )
-            handlerGitTag(project)
-            println("project class ${project.javaClass}")
-           val appPlugin: AppPlugin = project.plugins.findPlugin(AppPlugin::class.java)!!
-                println("project class ${appPlugin!!::class.java}")
-//            val hasApp = project.plugins.withType(AppPlugin::class.java)
-            appPlugin.variantInputModel.buildTypes.forEach {
-                println("project buildTypes key=${it.key}")
-            }
-           val versionName = appPlugin.variantInputModel.defaultConfigData.defaultConfig.versionName!!
-            println("project defaultConfig versionName=${versionName}")
+            handlerGitTag(project, toolsExFun)
 
+//            val t = variant.javaCompileProvider
+//            t.dependsOn()
         }
     }
-    private fun handlerGitTag(project: Project){
 
+    /**
+     * 创建tag与push tag 操作将在所有发布人最后执行，
+     * 要确认当前打包环境区分debug与release，所以选用依赖于
+     * {BaseAppModuleExtension.applicationVariants}来读取打包环境
+     * 选择安装任务{installProvider}、生成apk任务{assembleProvider}执行完执行tag相关操作，
+     * 这非常满足对「最后」可靠性的要求
+     */
+    private fun handlerGitTag(project: Project, exFun: ToolsExtension) {
+        val tag = ToolsClosureHandler.build(exFun.tag, GitTagConfig::class.java)
+        "tagAble=${tag.tagAble} tag=${tag.tagName} msg=${tag.tagMsg} followAnyReleaseBuild=${tag.followAnyReleaseBuild}".println()
+        if (!tag.tagAble) {
+            "GitTagConfig.tagAble = false".println()
+            return
+        }
+        val appModuleExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)!!
+        appModuleExtension.applicationVariants.forEach { variant ->
+            val debug = variant.buildType.isDebuggable
+            if (!debug) {
+//                variant.preBuildProvider.get().doLast {
+//                    "preBuildProvider".println("doLast debug---------")
+//                }
+
+//                variant.javaCompileProvider.get().doLast {
+//                    "javaCompileProvider".println("doLast debug-----------")
+//                }
+                //生成apk
+                variant.assembleProvider.get().doLast {
+                    "assembleProvider".println("doLast createAndPushTag ---------")
+                    GitTagTask.createAndPushTag(tagName = tag.tagName,tagMsg = tag.tagMsg)
+                }
+                //直接安装
+                variant.installProvider.get().doLast {
+                    "installProvider".println("doLast createAndPushTag ---------")
+                    GitTagTask.createAndPushTag(tagName = tag.tagName,tagMsg = tag.tagMsg)
+                }
+            }
+        }
     }
 }
 

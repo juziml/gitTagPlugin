@@ -1,23 +1,42 @@
 package com.gt.plugin
+
 /**
  *@Desc:
  *-
- *-
+ *- 在执行release打包任务时生效
  *create by zhusw on 2021/2/20 16:07
  */
 open class GitTagConfig {
-     var targetTaskName:ArrayList<String> = arrayListOf()
+    var tagAble = false
+    var followAnyReleaseBuild = false
+    var appointTask: ArrayList<String> = arrayListOf()
+    var tagName: String = ""
+    var tagMsg: String = ""
 
-     var tagName: String = ""
-     var tagMsg: String = ""
-
-    fun targetTaskName(v:ArrayList<String>){
-        targetTaskName = v
+    fun tagAble(v: Boolean) {
+        tagAble = v
     }
-    fun tagName(v:String){
+
+    /**
+     * 跟随编译release任务触发
+     */
+    fun followAnyReleaseBuild(v: Boolean) {
+        followAnyReleaseBuild = v
+    }
+
+    /**
+     * 指定任务触发
+     */
+    fun appointTask(v: ArrayList<String>) {
+        appointTask = v
+    }
+
+    fun tagName(v: String) {
         tagName = v
     }
-    fun tagMsg(v:String){
+
+    fun tagMsg(v: String) {
         tagMsg = v
     }
+
 }

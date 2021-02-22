@@ -9,13 +9,16 @@ def getDate(){
     def formattedDate = date.format('yyMMddHHmmss')
     return formattedDate
 }
-zmToolsEx{
 
+zmToolsEx{
     tag {
+        tagAble true
         def tasks = ['assembleDebug','assemble']
-        targetTaskName tasks //必须传对象，不可以直接在此处再创建数组
-        tagName "v.1.0.0"
+        appointTask tasks //必须传对象，不可以直接在此处创建数组
+        followAnyReleaseBuild true
+        tagName "v1.0"
         tagMsg "debug"
+
     }
 
 }
@@ -32,20 +35,31 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
-    buildTypes {
+    signingConfigs {
         release {
+            keyAlias 'android'
+            keyPassword 'android'
+            storeFile file("test.jks")
+            storePassword 'android'
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+            debuggable = true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug {
+        release {
+            debuggable = false
+            signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     flavorDimensions "version"
     productFlavors {
-        market {
+        myFlavor {
             dimension "version"
         }
 
