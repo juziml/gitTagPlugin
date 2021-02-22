@@ -8,7 +8,7 @@ package com.gt.plugin
  */
 open class GitTagConfig {
     var tagAble = false
-    var followAnyReleaseBuild = false
+    var followAnyReleaseBuild = true
     var appointTask: ArrayList<String> = arrayListOf()
     var tagName: String = ""
     var tagMsg: String = ""

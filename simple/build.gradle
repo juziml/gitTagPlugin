@@ -11,13 +11,15 @@ def getDate(){
 }
 
 zmToolsEx{
+    openLog = true
+    def name = "v1.0-${getDate()}"
+    def tasks = ['assembleRelease','installMyFlavorRelease']
     tag {
         tagAble true
-        def tasks = ['assembleDebug','assemble']
         appointTask tasks //必须传对象，不可以直接在此处创建数组
-        followAnyReleaseBuild true
-        tagName "v1.0"
-        tagMsg "debug"
+        followAnyReleaseBuild false
+        tagName  name
+        tagMsg "test"
 
     }
 

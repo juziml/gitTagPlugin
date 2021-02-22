@@ -17,11 +17,19 @@ class ToolsPlugin : Plugin<Project> {
             throw IllegalStateException("can not found 'android' plugin,only support on 'android' building")
         }
         project.afterEvaluate {
-            handlerGitTag(project, toolsExFun)
-
+            autoCreateAndPushTag(project, toolsExFun)
+            checkDependenciesRelease(project, toolsExFun)
 //            val t = variant.javaCompileProvider
 //            t.dependsOn()
         }
+    }
+
+    /**
+     * 当前版本检查，dependencies中是否包含SNPASHOT
+     */
+    private fun checkDependenciesRelease(project: Project, exFun: ToolsExtension) {
+
+
     }
 
     /**
@@ -30,8 +38,9 @@ class ToolsPlugin : Plugin<Project> {
      * {BaseAppModuleExtension.applicationVariants}来读取打包环境
      * 选择安装任务{installProvider}、生成apk任务{assembleProvider}执行完执行tag相关操作，
      * 这非常满足对「最后」可靠性的要求
+     * 当选择指定多个任务锚定tag操作时，避免指定有依赖关系的任务，否则将多次创建tag{虽然创建同名tag会失败}
      */
-    private fun handlerGitTag(project: Project, exFun: ToolsExtension) {
+    private fun autoCreateAndPushTag(project: Project, exFun: ToolsExtension) {
         val tag = ToolsClosureHandler.build(exFun.tag, GitTagConfig::class.java)
         "tagAble=${tag.tagAble} tag=${tag.tagName} msg=${tag.tagMsg} followAnyReleaseBuild=${tag.followAnyReleaseBuild}".println()
         if (!tag.tagAble) {
@@ -42,24 +51,43 @@ class ToolsPlugin : Plugin<Project> {
         appModuleExtension.applicationVariants.forEach { variant ->
             val debug = variant.buildType.isDebuggable
             if (!debug) {
+                if (tag.followAnyReleaseBuild) {
+                    variant.assembleProvider.get().doLast {
+                        "assembleProvider".println("followAnyReleaseBuild doLast createAndPushTag")
+                        GitTagTask.createAndPushTag(tagName = tag.tagName, tagMsg = tag.tagMsg)
+                    }
+                    //直接安装
+                    variant.installProvider.get().doLast {
+                        "installProvider".println("followAnyReleaseBuild doLast createAndPushTag")
+                        GitTagTask.createAndPushTag(tagName = tag.tagName, tagMsg = tag.tagMsg)
+                    }
+                } else {
+                    if (!tag.appointTask.isNullOrEmpty()) {
+                        project.tasks.forEach {
+                            if (tag.appointTask.contains(it.name)) {
+                                it.doLast {
+                                    GitTagTask.createAndPushTag(
+                                        tagName = tag.tagName,
+                                        tagMsg = tag.tagMsg
+                                    )
+                                }
+                                "match one task:${it.name} doLast createAndPushTag ---------".println(
+                                    "appointTask"
+                                )
+                            }
+                        }
+                    } else {
+                        "appointTask isNullOrEmpty".println()
+                    }
+                }
+            }
 //                variant.preBuildProvider.get().doLast {
 //                    "preBuildProvider".println("doLast debug---------")
 //                }
-
 //                variant.javaCompileProvider.get().doLast {
 //                    "javaCompileProvider".println("doLast debug-----------")
 //                }
-                //生成apk
-                variant.assembleProvider.get().doLast {
-                    "assembleProvider".println("doLast createAndPushTag ---------")
-                    GitTagTask.createAndPushTag(tagName = tag.tagName,tagMsg = tag.tagMsg)
-                }
-                //直接安装
-                variant.installProvider.get().doLast {
-                    "installProvider".println("doLast createAndPushTag ---------")
-                    GitTagTask.createAndPushTag(tagName = tag.tagName,tagMsg = tag.tagMsg)
-                }
-            }
+            //生成apk
         }
     }
 }

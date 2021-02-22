@@ -7,6 +7,9 @@ package com.gt.plugin
  *create by zhusw on 2021/2/22 19:56
  */
 const val COMMON_TAG = "ToolsPlugin"
+var logable = true
 fun String.println(secTag:String=COMMON_TAG){
-    kotlin.io.println("$COMMON_TAG:$secTag : $this")
+    if(logable){
+        kotlin.io.println("$COMMON_TAG:$secTag : $this")
+    }
 }

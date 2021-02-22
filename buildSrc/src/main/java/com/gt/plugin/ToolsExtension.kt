@@ -10,6 +10,15 @@ import javax.swing.Action
  */
 //作为拓展函数对象，不能是final
 open class ToolsExtension {
+    var openLog = true
+    set(value) {
+        field = value
+        logable = value
+    }
+    fun openLog(v: Boolean){
+        openLog = v
+    }
+
    lateinit var tag: Closure<Any>
     fun tag(closure: Closure<Any>) {
         tag = closure
@@ -18,6 +27,7 @@ open class ToolsExtension {
     fun checkSnapshot(closure: Closure<Any>){
         checkSnapshot = closure
     }
+
 }
 
 
