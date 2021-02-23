@@ -42,9 +42,10 @@ class ToolsPlugin : Plugin<Project> {
      */
     private fun autoCreateAndPushTag(project: Project, exFun: ToolsExtension) {
         val tag = ToolsClosureHandler.build(exFun.tag, GitTagConfig::class.java)
-        "tagAble=${tag.tagAble} tag=${tag.tagName} msg=${tag.tagMsg} followAnyReleaseBuild=${tag.followAnyReleaseBuild}".println()
+        ("tagAble=${tag.tagAble} tag=${tag.tagName} msg=${tag.tagMsg} " +
+                "followAnyReleaseBuild=${tag.followAnyReleaseBuild}").println("tag config")
         if (!tag.tagAble) {
-            "GitTagConfig.tagAble = false".println()
+            "GitTagConfig.tagAble is false".println()
             return
         }
         val appModuleExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)!!
@@ -53,12 +54,12 @@ class ToolsPlugin : Plugin<Project> {
             if (!debug) {
                 if (tag.followAnyReleaseBuild) {
                     variant.assembleProvider.get().doLast {
-                        "assembleProvider".println("followAnyReleaseBuild doLast createAndPushTag")
+                        "followAnyReleaseBuild doLast createAndPushTag".println("assembleProvider")
                         GitTagTask.createAndPushTag(tagName = tag.tagName, tagMsg = tag.tagMsg)
                     }
                     //直接安装
                     variant.installProvider.get().doLast {
-                        "installProvider".println("followAnyReleaseBuild doLast createAndPushTag")
+                        "followAnyReleaseBuild doLast createAndPushTag".println("installProvider")
                         GitTagTask.createAndPushTag(tagName = tag.tagName, tagMsg = tag.tagMsg)
                     }
                 } else {
