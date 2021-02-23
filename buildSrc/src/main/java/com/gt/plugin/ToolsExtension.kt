@@ -23,11 +23,13 @@ open class ToolsExtension {
     fun tag(closure: Closure<Any>) {
         tag = closure
     }
-    lateinit var checkSnapshot: Closure<Any>
-    fun checkSnapshot(closure: Closure<Any>){
-        checkSnapshot = closure
+
+    lateinit var releaseCheck: Closure<Any>
+    fun releaseCheck(closure: Closure<Any>){
+        releaseCheck = closure
     }
 
 }
+
 
 

@@ -4,6 +4,8 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.lang.IllegalArgumentException
+import java.lang.StringBuilder
 
 class ToolsPlugin : Plugin<Project> {
 
@@ -12,23 +14,57 @@ class ToolsPlugin : Plugin<Project> {
         val toolsExFun = project
             .extensions.create("zmToolsEx", ToolsExtension::class.java)
 //       val libExFun =  project.extensions.findByType(LibraryExtension::class.java) //lib 编译拓展函数，暂时用不到
-        val appPlugin: AppPlugin? = project.plugins.findPlugin(AppPlugin::class.java)
-        if (null == appPlugin) {
-            throw IllegalStateException("can not found 'android' plugin,only support on 'android' building")
-        }
+        project.plugins.findPlugin(AppPlugin::class.java)
+            ?: throw IllegalStateException("can not found 'android' plugin,only support on 'android' building")
         project.afterEvaluate {
             autoCreateAndPushTag(project, toolsExFun)
-            checkDependenciesRelease(project, toolsExFun)
-//            val t = variant.javaCompileProvider
-//            t.dependsOn()
+            releaseCheck(project, toolsExFun)
         }
     }
 
     /**
      * 当前版本检查，dependencies中是否包含SNPASHOT
      */
-    private fun checkDependenciesRelease(project: Project, exFun: ToolsExtension) {
+    private fun releaseCheck(project: Project, exFun: ToolsExtension) {
+        val check = ToolsClosureHandler.build(exFun.releaseCheck, ReleaseCheckConfig::class.java)
+        val appModuleExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)!!
+        appModuleExtension.applicationVariants.forEach { variant ->
+            val debug = variant.buildType.isDebuggable
+            if (!debug) {
+                if (check.checkDependenciesSnapshot) {
+                    variant.preBuildProvider.get().doFirst {
+                        "preBuildProvider".println("------------preBuildProvider")
+                        val whiteList = check.snapShotWhiteList.map {
+                            it.toLowerCase()
+                        }
+                        val strBuilder = StringBuilder()
+                        project.dependencies.components.all { rule ->
+                            val depFull = rule.toString().toLowerCase()
+                            "all components = $depFull".println("------------dependencies.components-all")
+                            if (depFull.contains(":")) {
+                                val group_name = depFull.substring(0, depFull.lastIndexOf(":"))
+                                if (!whiteList.contains(group_name)) {
+                                    if (depFull.contains("snapshot")) {
+                                        strBuilder.append(rule.toString() + "\n")
+                                    }
+                                }
+                            }
+                        }
+                        if (strBuilder.toString().isNotEmpty()) {
+                            throw IllegalArgumentException(
+                                "release build can't contains snapshot deps!" +
+                                        ":${strBuilder.toString()}"
+                            )
+                        }
+                    }
+//                    variant.javaCompileProvider.get().doFirst {
+//                        "djavaCompileProvider".println("------------javaCompileProvider")
+//                    }
+                }
+                return@releaseCheck
+            }
 
+        }
 
     }
 
@@ -53,6 +89,7 @@ class ToolsPlugin : Plugin<Project> {
             val debug = variant.buildType.isDebuggable
             if (!debug) {
                 if (tag.followAnyReleaseBuild) {
+                    //打包apk
                     variant.assembleProvider.get().doLast {
                         "followAnyReleaseBuild doLast createAndPushTag".println("assembleProvider")
                         GitTagTask.createAndPushTag(tagName = tag.tagName, tagMsg = tag.tagMsg)
@@ -81,6 +118,7 @@ class ToolsPlugin : Plugin<Project> {
                         "appointTask isNullOrEmpty".println()
                     }
                 }
+                return@autoCreateAndPushTag //只对一类release生效即可
             }
 //                variant.preBuildProvider.get().doLast {
 //                    "preBuildProvider".println("doLast debug---------")
