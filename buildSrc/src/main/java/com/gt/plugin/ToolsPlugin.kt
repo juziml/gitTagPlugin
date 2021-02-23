@@ -2,6 +2,7 @@ package com.gt.plugin
 
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
+import groovy.lang.Closure
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.lang.IllegalArgumentException
@@ -26,7 +27,7 @@ class ToolsPlugin : Plugin<Project> {
      * 当前版本检查，dependencies中是否包含SNPASHOT
      */
     private fun releaseCheck(project: Project, exFun: ToolsExtension) {
-        val check = ToolsClosureHandler.build(exFun.releaseCheck, ReleaseCheckConfig::class.java)
+        val check = ToolsClosureHandler.build( exFun.releaseCheck, ReleaseCheckConfig::class.java)
         val appModuleExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)!!
         appModuleExtension.applicationVariants.forEach { variant ->
             val debug = variant.buildType.isDebuggable

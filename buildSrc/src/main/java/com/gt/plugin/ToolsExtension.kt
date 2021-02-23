@@ -19,12 +19,12 @@ open class ToolsExtension {
         openLog = v
     }
 
-   lateinit var tag: Closure<Any>
+    var tag: Closure<Any> = object : Closure<Any>(GitTagConfig()){}
     fun tag(closure: Closure<Any>) {
         tag = closure
     }
 
-    lateinit var releaseCheck: Closure<Any>
+    var releaseCheck: Closure<Any> = object : Closure<Any>(ReleaseCheckConfig()){}
     fun releaseCheck(closure: Closure<Any>){
         releaseCheck = closure
     }
