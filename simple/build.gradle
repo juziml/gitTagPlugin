@@ -6,13 +6,13 @@ apply plugin:'zm-tools'
 
 def getDate(){
     def date = new Date()
-    def formattedDate = date.format('yyMMddHHmmss')
+    def formattedDate = date.format('yyyyMMddHHmmss')
     return formattedDate
 }
 
 zmToolsEx{
     openLog = true
-    def name = "v1.0-${getDate()}"
+    def name = "v2.0-${getDate()}"
     def tasks = ['assembleRelease','installMyFlavorRelease']
     tag {
         tagAble true
@@ -20,7 +20,6 @@ zmToolsEx{
         followAnyReleaseBuild false
         tagName  name
         tagMsg "test"
-
     }
 
 }
