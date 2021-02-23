@@ -51,7 +51,7 @@ class ToolsPlugin : Plugin<Project> {
                         "$strBuilder".println("snapshot libs:")
                         if (strBuilder.toString().isNotEmpty()) {
                             throw IllegalArgumentException(
-                                "release build can't contains snapshot deps!" +
+                                "snapshot deps is not allowed when buildRelease" +
                                         ":${strBuilder.toString()}"
                             )
                         }
