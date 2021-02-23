@@ -1,2 +1,3 @@
+include ':depTestLib'
 include ':simple'
 rootProject.name = "plugin-git-tag"

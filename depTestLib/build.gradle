@@ -42,6 +42,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.github.HarkBen:library_tbaseui:1.2.7'//test
-//    implementation 'com.github.HarkBen:TBRetrofit:2.2-SNAPSHOT'//test
+    implementation 'com.github.wendux:WebViewJavascriptBridge:master-SNAPSHOT'
     implementation files('libs/GDTSDK.unionNormal.4.232.1102.aar')//test
 }

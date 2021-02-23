@@ -12,16 +12,19 @@ def getDate(){
 
 zmToolsEx{
     openLog = true
-    def name = "v2.0-${getDate()}"
     def tasks = ['assembleRelease','installMyFlavorRelease']
+    def name = "v2.0-${getDate()}"
     tag {
-        tagAble true
-        appointTask tasks //必须传对象，不可以直接在此处创建数组
+        tagAble false
+        appointTask  tasks //必须传对象，不可以直接在此处创建数组
         followAnyReleaseBuild false
         tagName  name
         tagMsg "test"
     }
 
+    releaseCheck{
+//        snapShotWhiteList 'com.github.HarkBen:TBRetrofit'
+    }
 }
 android {
     compileSdkVersion =  30
@@ -47,18 +50,18 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.release
-            debuggable = true
             minifyEnabled false
+            debuggable true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
-            debuggable = false
             signingConfig signingConfigs.release
             minifyEnabled true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions "version"
+    flavorDimensions "version" //不配置就没有assembleRelease/debug 任务
     productFlavors {
         myFlavor {
             dimension "version"
@@ -86,4 +89,5 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation project(':depTestLib')
 }

@@ -8,16 +8,18 @@ package com.gt.plugin
  */
 open class ReleaseCheckConfig {
 
-    var checkReleaseMinifyEnabled:Boolean= true
-    fun checkReleaseMinifyEnabled(v:Boolean){
+    var checkReleaseMinifyEnabled: Boolean = true
+    fun checkReleaseMinifyEnabled(v: Boolean) {
         checkReleaseMinifyEnabled = v
     }
-    var checkDependenciesSnapshot:Boolean = true
-    fun checkDependenciesSnapshot(v:Boolean){
+
+    var checkDependenciesSnapshot: Boolean = true
+    fun checkDependenciesSnapshot(v: Boolean) {
         checkDependenciesSnapshot = v
     }
-   var snapShotWhiteList:Array<String> = arrayOf()
-    fun snapShotWhiteList(v:Array<String>){
+
+    var snapShotWhiteList: Array<String> = arrayOf()
+    fun snapShotWhiteList(v: Array<String>) {
         snapShotWhiteList = v
     }
 

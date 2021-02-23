@@ -32,24 +32,23 @@ class ToolsPlugin : Plugin<Project> {
             val debug = variant.buildType.isDebuggable
             if (!debug) {
                 if (check.checkDependenciesSnapshot) {
-                    variant.preBuildProvider.get().doFirst {
-                        "preBuildProvider".println("------------preBuildProvider")
-                        val whiteList = check.snapShotWhiteList.map {
-                            it.toLowerCase()
-                        }
-                        val strBuilder = StringBuilder()
-                        project.dependencies.components.all { rule ->
-                            val depFull = rule.toString().toLowerCase()
-                            "all components = $depFull".println("------------dependencies.components-all")
-                            if (depFull.contains(":")) {
-                                val group_name = depFull.substring(0, depFull.lastIndexOf(":"))
-                                if (!whiteList.contains(group_name)) {
-                                    if (depFull.contains("snapshot")) {
-                                        strBuilder.append(rule.toString() + "\n")
-                                    }
+                    val strBuilder = StringBuilder()
+                    val whiteList = check.snapShotWhiteList
+                    project.dependencies.components.all { rule ->
+                        val depFull = rule.toString()
+                        if (depFull.contains(":")) {
+                            val group_name = depFull.substring(0, depFull.lastIndexOf(":"))
+                            "group_name = $depFull".println("------------dependencies.components-all")
+                            if (!whiteList.contains(group_name)) {
+                                if (depFull.contains("SNAPSHOT",ignoreCase = true)) {
+                                    strBuilder.append(rule.toString() + "\n")
                                 }
                             }
                         }
+                    }
+                    variant.javaCompileProvider.get().doFirst {
+                        "javaCompileProvider".println("------------javaCompileProvider.doFirst")
+                        "$strBuilder".println("snapshot libs:")
                         if (strBuilder.toString().isNotEmpty()) {
                             throw IllegalArgumentException(
                                 "release build can't contains snapshot deps!" +
@@ -57,9 +56,6 @@ class ToolsPlugin : Plugin<Project> {
                             )
                         }
                     }
-//                    variant.javaCompileProvider.get().doFirst {
-//                        "djavaCompileProvider".println("------------javaCompileProvider")
-//                    }
                 }
                 return@releaseCheck
             }
