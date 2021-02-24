@@ -49,7 +49,7 @@ class ToolsPlugin : Plugin<Project> {
                         if (depFull.contains(":")) {
                             val group_name = depFull.substring(0, depFull.lastIndexOf(":"))
                             if (!whiteList.contains(group_name)) {
-                                if (depFull.contains("SNAPSHOT",ignoreCase = true)) {
+                                if (depFull.endsWith("SNAPSHOT",ignoreCase = true)) {
                                     strBuilder.append(rule.toString() + "\n")
                                 }
                             }
