@@ -3,8 +3,10 @@ package com.gt.plugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
 import groovy.lang.Closure
+import groovy.util.logging.Log
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
 
@@ -14,6 +16,7 @@ class ToolsPlugin : Plugin<Project> {
         "project.name ${project.name}\"".println()
         val toolsExFun = project
             .extensions.create("zmToolsEx", ToolsExtension::class.java)
+
 //       val libExFun =  project.extensions.findByType(LibraryExtension::class.java) //lib 编译拓展函数，暂时用不到
         project.plugins.findPlugin(AppPlugin::class.java)
             ?: throw IllegalStateException("can not found 'android' plugin,only support on 'android' building")
@@ -21,13 +24,18 @@ class ToolsPlugin : Plugin<Project> {
             autoCreateAndPushTag(project, toolsExFun)
             releaseCheck(project, toolsExFun)
         }
+
     }
 
     /**
      * 当前版本检查，dependencies中是否包含SNPASHOT
      */
     private fun releaseCheck(project: Project, exFun: ToolsExtension) {
-        val check = ToolsClosureHandler.build( exFun.releaseCheck, ReleaseCheckConfig::class.java)
+        val check = if(exFun.releaseCheck != null){
+            ToolsClosureHandler.build(exFun.releaseCheck!!, ReleaseCheckConfig::class.java)
+        }else{
+            ReleaseCheckConfig()
+        }
         "check deps-snapshot;${check.checkDependenciesSnapshot} check minifyEnable=${check.checkMinifyEnabled}".println(
             "---------releaseCheck config:"
         )
@@ -73,19 +81,26 @@ class ToolsPlugin : Plugin<Project> {
     }
 
     /**
-     * 创建tag与push tag 操作将在所有发布人最后执行，
+     * 创建tag与push tag 操作将在所有任务结束后执行，
      * 要确认当前打包环境区分debug与release，所以选用依赖于
      * {BaseAppModuleExtension.applicationVariants}来读取打包环境
      * 选择安装任务{installProvider}、生成apk任务{assembleProvider}执行完执行tag相关操作，
      * 这非常满足对「最后」可靠性的要求
-     * 当选择指定多个任务锚定tag操作时，避免指定有依赖关系的任务，否则将多次创建tag{虽然创建同名tag会失败}
+     * 当选择指定多个任务锚定tag操作时，避免指定有依赖关系的任务，否则将多次执行创建tag{虽然创建同名tag会失败}
      */
     private fun autoCreateAndPushTag(project: Project, exFun: ToolsExtension) {
-        val tag = ToolsClosureHandler.build(exFun.tag, GitTagConfig::class.java)
-        ("tagAble=${tag.tagAble} tag=${tag.tagName} msg=${tag.tagMsg} " +
-                "followAnyReleaseBuild=${tag.followAnyReleaseBuild}").println("---------git tag config:")
-        if (!tag.tagAble) {
+        if(exFun.gitTag == null){
+            println("----------------------------------------")
+            println("-----can't found gitTag extension-------")
+            println("----------------------------------------")
             return
+        }
+        val tag = ToolsClosureHandler.build(exFun.gitTag!!, GitTagConfig::class.java)
+        ("tag=${tag.tagName} msg=${tag.tagMsg} " +"followAnyReleaseBuild=" +
+                "${tag.followAnyReleaseBuild}").println("---------git tag config:")
+
+        if(tag.tagName.isNullOrEmpty()){
+            throw IllegalArgumentException("tagName.isNullOrEmpty")
         }
         val appModuleExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)!!
         appModuleExtension.applicationVariants.forEach { variant ->

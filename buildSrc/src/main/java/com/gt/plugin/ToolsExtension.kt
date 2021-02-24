@@ -10,22 +10,22 @@ import javax.swing.Action
  */
 //作为拓展函数对象，不能是final
 open class ToolsExtension {
-    var openLog = true
-    set(value) {
-        field = value
-        logable = value
-    }
-    fun openLog(v: Boolean){
-        openLog = v
-    }
-
-    var tag: Closure<Any> = object : Closure<Any>(GitTagConfig()){}
-    fun tag(closure: Closure<Any>) {
-        tag = closure
+    var logEnable = true
+        set(value) {
+            field = value
+            logable = value
+        }
+    fun logEnable(v: Boolean) {
+        logEnable = v
     }
 
-    var releaseCheck: Closure<Any> = object : Closure<Any>(ReleaseCheckConfig()){}
-    fun releaseCheck(closure: Closure<Any>){
+    var gitTag: Closure<Any>? = null
+    fun gitTag(closure: Closure<Any>) {
+        gitTag = closure
+    }
+
+    var releaseCheck: Closure<Any>? = null
+    fun releaseCheck(closure: Closure<Any>) {
         releaseCheck = closure
     }
 

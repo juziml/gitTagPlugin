@@ -7,15 +7,12 @@ package com.gt.plugin
  *create by zhusw on 2021/2/20 16:07
  */
 open class GitTagConfig {
-    var tagAble = false
+
     var followAnyReleaseBuild = true
     var appointTask: Array<String> = arrayOf()
     var tagName: String = ""
     var tagMsg: String = ""
 
-    fun tagAble(v: Boolean) {
-        tagAble = v
-    }
 
     /**
      * 跟随编译release任务触发

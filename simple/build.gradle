@@ -9,24 +9,21 @@ def getDate(){
     def formattedDate = date.format('yyyyMMddHHmmss')
     return formattedDate
 }
+def suffix = getDate()
+//zmToolsEx{
+//    logEnable = true
 
-zmToolsEx{
-    openLog = true
-    def suffix = getDate()
-    tag {
-        tagAble true
-        appointTask  'assembleRelease','installMyFlavorRelease'
-        followAnyReleaseBuild false
-        tagName  "v3.0-$suffix"
-        tagMsg "test"
-    }
-
-    releaseCheck{
-        checkDependenciesSnapshot= true
-        snapShotWhiteList 'com.github.wendux:WebViewJavascriptBridge','installMyFlavorRelease'
-        checkMinifyEnabled = true
-    }
-}
+//    tag {
+//        followAnyReleaseBuild false
+//        appointTask  'assembleRelease','installMyFlavorRelease'
+//        tagName  "v3.0-$suffix"
+//    }
+//    releaseCheck{
+//        checkDependenciesSnapshot= true
+//        snapShotWhiteList 'com.github.wendux:WebViewJavascriptBridge','installMyFlavorRelease'
+//        checkMinifyEnabled = true
+//    }
+//}
 android {
     compileSdkVersion =  30
     buildToolsVersion  = "30.0.0"
