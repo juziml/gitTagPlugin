@@ -8,9 +8,9 @@ package com.gt.plugin
  */
 open class ReleaseCheckConfig {
 
-    var checkReleaseMinifyEnabled: Boolean = true
-    fun checkReleaseMinifyEnabled(v: Boolean) {
-        checkReleaseMinifyEnabled = v
+    var checkMinifyEnabled: Boolean = true
+    fun checkMinifyEnabled(v: Boolean) {
+        checkMinifyEnabled = v
     }
 
     var checkDependenciesSnapshot: Boolean = true

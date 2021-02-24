@@ -28,10 +28,19 @@ class ToolsPlugin : Plugin<Project> {
      */
     private fun releaseCheck(project: Project, exFun: ToolsExtension) {
         val check = ToolsClosureHandler.build( exFun.releaseCheck, ReleaseCheckConfig::class.java)
+        "check deps-snapshot;${check.checkDependenciesSnapshot} check minifyEnable=${check.checkMinifyEnabled}".println(
+            "---------releaseCheck config:"
+        )
         val appModuleExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)!!
         appModuleExtension.applicationVariants.forEach { variant ->
             val debug = variant.buildType.isDebuggable
             if (!debug) {
+                if(check.checkMinifyEnabled){
+                   if(!variant.buildType.isMinifyEnabled){
+                       throw IllegalArgumentException(
+                           "minifyEnabled is not allowed false when buildRelease,set true try again")
+                   }
+                }
                 if (check.checkDependenciesSnapshot) {
                     val strBuilder = StringBuilder()
                     val whiteList = check.snapShotWhiteList
@@ -39,7 +48,6 @@ class ToolsPlugin : Plugin<Project> {
                         val depFull = rule.toString()
                         if (depFull.contains(":")) {
                             val group_name = depFull.substring(0, depFull.lastIndexOf(":"))
-                            "group_name = $depFull".println("------------dependencies.components-all")
                             if (!whiteList.contains(group_name)) {
                                 if (depFull.contains("SNAPSHOT",ignoreCase = true)) {
                                     strBuilder.append(rule.toString() + "\n")
@@ -48,7 +56,6 @@ class ToolsPlugin : Plugin<Project> {
                         }
                     }
                     variant.javaCompileProvider.get().doFirst {
-                        "javaCompileProvider".println("------------javaCompileProvider.doFirst")
                         "$strBuilder".println("snapshot libs:")
                         if (strBuilder.toString().isNotEmpty()) {
                             throw IllegalArgumentException(
@@ -76,9 +83,8 @@ class ToolsPlugin : Plugin<Project> {
     private fun autoCreateAndPushTag(project: Project, exFun: ToolsExtension) {
         val tag = ToolsClosureHandler.build(exFun.tag, GitTagConfig::class.java)
         ("tagAble=${tag.tagAble} tag=${tag.tagName} msg=${tag.tagMsg} " +
-                "followAnyReleaseBuild=${tag.followAnyReleaseBuild}").println("tag config")
+                "followAnyReleaseBuild=${tag.followAnyReleaseBuild}").println("---------git tag config:")
         if (!tag.tagAble) {
-            "GitTagConfig.tagAble is false".println()
             return
         }
         val appModuleExtension = project.extensions.findByType(BaseAppModuleExtension::class.java)!!
@@ -88,12 +94,10 @@ class ToolsPlugin : Plugin<Project> {
                 if (tag.followAnyReleaseBuild) {
                     //打包apk
                     variant.assembleProvider.get().doLast {
-                        "followAnyReleaseBuild doLast createAndPushTag".println("assembleProvider")
                         GitTagTask.createAndPushTag(tagName = tag.tagName, tagMsg = tag.tagMsg)
                     }
                     //直接安装
                     variant.installProvider.get().doLast {
-                        "followAnyReleaseBuild doLast createAndPushTag".println("installProvider")
                         GitTagTask.createAndPushTag(tagName = tag.tagName, tagMsg = tag.tagMsg)
                     }
                 } else {
@@ -106,24 +110,12 @@ class ToolsPlugin : Plugin<Project> {
                                         tagMsg = tag.tagMsg
                                     )
                                 }
-                                "match one task:${it.name} doLast createAndPushTag ---------".println(
-                                    "appointTask"
-                                )
                             }
                         }
-                    } else {
-                        "appointTask isNullOrEmpty".println()
                     }
                 }
                 return@autoCreateAndPushTag //只对一类release生效即可
             }
-//                variant.preBuildProvider.get().doLast {
-//                    "preBuildProvider".println("doLast debug---------")
-//                }
-//                variant.javaCompileProvider.get().doLast {
-//                    "javaCompileProvider".println("doLast debug-----------")
-//                }
-            //生成apk
         }
     }
 }

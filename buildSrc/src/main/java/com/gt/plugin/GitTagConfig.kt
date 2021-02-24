@@ -9,7 +9,7 @@ package com.gt.plugin
 open class GitTagConfig {
     var tagAble = false
     var followAnyReleaseBuild = true
-    var appointTask: ArrayList<String> = arrayListOf()
+    var appointTask: Array<String> = arrayOf()
     var tagName: String = ""
     var tagMsg: String = ""
 
@@ -27,7 +27,7 @@ open class GitTagConfig {
     /**
      * 指定任务触发
      */
-    fun appointTask(v: ArrayList<String>) {
+    fun appointTask(v: Array<String>) {
         appointTask = v
     }
 

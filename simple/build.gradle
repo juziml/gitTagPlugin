@@ -12,18 +12,19 @@ def getDate(){
 
 zmToolsEx{
     openLog = true
-    def tasks = ['assembleRelease','installMyFlavorRelease']
-    def name = "v2.0-${getDate()}"
+    def suffix = getDate()
     tag {
-        tagAble false
-        appointTask  tasks //必须传对象，不可以直接在此处创建数组
+        tagAble true
+        appointTask  'assembleRelease','installMyFlavorRelease'
         followAnyReleaseBuild false
-        tagName  name
+        tagName  "v3.0-$suffix"
         tagMsg "test"
     }
 
     releaseCheck{
-//        snapShotWhiteList 'com.github.HarkBen:TBRetrofit'
+        checkDependenciesSnapshot= true
+        snapShotWhiteList 'com.github.wendux:WebViewJavascriptBridge','installMyFlavorRelease'
+        checkMinifyEnabled = true
     }
 }
 android {
