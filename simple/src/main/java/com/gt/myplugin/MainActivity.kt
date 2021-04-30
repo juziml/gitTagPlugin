@@ -1,7 +1,7 @@
 package com.gt.myplugin
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.grock.deptestlib.LibTest
 import com.grock.myplugin.R
 
@@ -10,5 +10,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         LibTest.test()
         setContentView(R.layout.activity_main)
+
     }
 }

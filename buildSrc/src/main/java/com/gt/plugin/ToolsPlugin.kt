@@ -16,7 +16,9 @@ class ToolsPlugin : Plugin<Project> {
         "project.name ${project.name}\"".println()
         val toolsExFun = project
             .extensions.create("zmToolsEx", ToolsExtension::class.java)
-
+        project.tasks.create("aaaMyTask0001").doFirst {
+            "run task aaaMyTask0001".println()
+        }
 //       val libExFun =  project.extensions.findByType(LibraryExtension::class.java) //lib 编译拓展函数，暂时用不到
         project.plugins.findPlugin(AppPlugin::class.java)
             ?: throw IllegalStateException("can not found 'android' plugin,only support on 'android' building")
